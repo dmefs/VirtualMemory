@@ -41,7 +41,7 @@ PageTable::operator[](const long pnum)
     /*
     Get the number (index) of the frame in physical memory corresponding to
     given page number (pnum) in logical memory; this is done prior to every
-    access to Memory. Page faults are resolved automatically.
+    access to Memory_tmp. Page faults are resolved automatically.
     */
     long fnum;
     pageFault = tlbMiss = false;
@@ -61,7 +61,7 @@ PageTable::operator[](const long pnum)
             copy(
               bs.getBuff(),
               bs.getBuff() + FRAME_SIZE,
-              Memory[fnum]); // copy into the frame at fnum of physical memory
+              Memory_tmp[fnum]);   // copy into the frame at fnum of physical memory
             pt[pnum].first = fnum; // point the pnum enty to fnum in page table
         }
 
@@ -95,8 +95,8 @@ PageTable::getFreeFrameNum()
         fnum = *fs.begin(); // always get the free frame with the smallest frame
                             // number
         fs.erase(fnum);     // remove fnum from the set of free frames
-    } else { // need to replace a page, q is full (since we don't delete a page
-             // by itself, fs.size() == 64 - q.size())
+    } else {                // need to replace a page, q is full (since we don't delete a page
+        // by itself, fs.size() == 64 - q.size())
         // either FIFO or LRU replaces the page at the front of the queue
         long pnum = q.front(); // victim page number
         fnum = pt[pnum].first;

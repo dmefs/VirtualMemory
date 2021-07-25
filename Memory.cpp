@@ -1,12 +1,12 @@
 #include "memory.h"
 
-arr2d Memory; // 8GB physical memory
+arr2d Memory_tmp; // 8GB physical memory
 
 int
 init_memory()
 {
-    Memory = new unsigned char[NUM_PHYSICAL_MEM_FRAMES][FRAME_SIZE];
-    if (!Memory)
+    Memory_tmp = new unsigned char[NUM_PHYSICAL_MEM_FRAMES][FRAME_SIZE];
+    if (!Memory_tmp)
         return -1;
     return 0;
 }
@@ -14,5 +14,5 @@ init_memory()
 void
 exit_memory()
 {
-    delete Memory;
+    delete Memory_tmp;
 }

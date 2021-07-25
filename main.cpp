@@ -60,11 +60,11 @@ main(int argc, char** argv)
         } else if (op == "W") {
             T.setDirty(pnum, true);
             arg = stoi(fields[2]);
-            Memory[fnum][offset] = arg;
+            Memory_tmp[fnum][offset] = arg;
         } else
             cerr << "Bad operation: " << op << endl;
 
-        memval = Memory[fnum][offset];
+        memval = Memory_tmp[fnum][offset];
 
         // output format: page #, offset, TLB hit, page fault, physical address,
         // value (only for reads)
@@ -78,7 +78,10 @@ main(int argc, char** argv)
 
         fields.clear();
     }
-    cout << endl << "Page Table:" << endl << T << endl;
-    cout << endl << T.numPageFaults << " Page Faults" << endl;
+    cout << endl
+         << "Page Table:" << endl
+         << T << endl;
+    cout << endl
+         << T.numPageFaults << " Page Faults" << endl;
     input.close();
 }

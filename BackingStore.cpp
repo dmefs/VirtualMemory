@@ -31,7 +31,7 @@ BackingStore::write(long pnum, long fnum)
 
     // seek to the page at pnum
     if (store.seekg(pnum * FRAME_SIZE, ios::beg))
-        store.write((char*)Memory[fnum], FRAME_SIZE);
+        store.write((char*)Memory_tmp[fnum], FRAME_SIZE);
     else
         throw runtime_error("Seek error");
 }

@@ -1,6 +1,8 @@
 #include "TLB.h"
 
-long &TLB::operator[](const long pnum) {
+long&
+TLB::operator[](const long pnum)
+{
     // before returning a reference to tb[pnum], update the queue according to
     // LRU policy
     if (tb.count(pnum))
