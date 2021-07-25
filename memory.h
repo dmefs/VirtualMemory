@@ -3,10 +3,26 @@
 Define the page (frame) size, logical and physical memory size; declare
 the Memory array (but not define it).
 */
-const int NUM_LOGICAL_MEM_FRAMES = 256;	// logical memory can address 2^8=256 frames/pages (each logical address has 16 bits)
-const int NUM_PHYSICAL_MEM_FRAMES = 64;	// physical memory has only 64 frames
-const int FRAME_SIZE_BITS = 8;		// lower 8 bits of logical memory address
-const int FRAME_SIZE = 256;			// 2^FRAME_SIZE, same as page size (in number of bytes)
-const int FRAME_OFFSET_MASK = FRAME_SIZE - 1;	// mask to preserve the lower 8 bits (255 is binary 1111 1111)
-extern unsigned char Memory[NUM_PHYSICAL_MEM_FRAMES][FRAME_SIZE];	// 64*256=2^14 bytes physical memory
-const int TLB_SIZE = 16;			// max number of entries in the translation lookaside buffer
+
+const long
+  NUM_LOGICAL_MEM_FRAMES = // logical memory has 48 bits virtual address
+                           // frames/pages (each logical address
+  (1L << 36);              // has 16 bits)
+
+const long NUM_PHYSICAL_MEM_FRAMES = (1L << 20); // physical memory has 4GB
+const long FRAME_SIZE_BITS = 12; // lower 12 bits of logical memory address
+const long FRAME_SIZE =
+  (1 << FRAME_SIZE_BITS); // 2^FRAME_SIZE_BITS, Default is 4k, same as page
+                          // size (in number of bytes)
+const long FRAME_OFFSET_MASK =
+  FRAME_SIZE - 1; // mask to preserve the lower 12 bits
+const int TLB_SIZE =
+  64; // max number of entries in the translation lookaside buffer
+
+using arr2d = unsigned char (*)[FRAME_SIZE];
+extern arr2d Memory; // 8GB physical memory
+int
+init_memory();
+
+void
+exit_memory();
