@@ -8,4 +8,4 @@ FLAGS = -g -Wall -std=c++11
 $(EXE):	$(OBJS)
 	g++ $(FLAGS) -o $(EXE) $(OBJS)
 clean:
-	rm -f core $(EXE) $(OBJS)
+	rm -f core $(EXE)
