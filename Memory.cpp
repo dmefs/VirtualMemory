@@ -1,5 +1,7 @@
 #include "memory.h"
 
+arr2d Memory; // 8GB physical memory
+
 int
 init_memory()
 {
