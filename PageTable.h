@@ -18,7 +18,7 @@ class PageTable
     std::string pageReplacementPolicy;
     std::list<long> q; // a queue (deque) of used pages, for implementing FIFO
                        // or LRU page replacement
-    BackingStore bs;
+    // BackingStore bs;
     TLB tlb;
     long getFreeFrameNum();
     friend std::ostream& operator<<(std::ostream&, const PageTable&);

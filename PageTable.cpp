@@ -9,7 +9,6 @@ using namespace std;
 
 PageTable::PageTable(const string& pageReplacementPolicy,
                      const string& backingStorePath)
-  : bs(backingStorePath)
 {
     if (!(pageReplacementPolicy == "FIFO" || pageReplacementPolicy == "LRU"))
         throw invalid_argument("Page replacement policy must be FIFO or LRU");
@@ -29,10 +28,10 @@ PageTable::PageTable(const string& pageReplacementPolicy,
 PageTable::~PageTable()
 {
     // commit all dirty pages to backing store
-    for (auto const& kv : pt) {
-        if (kv.second.second)
-            bs.write(kv.first, kv.second.first);
-    }
+    // for (auto const& kv : pt) {
+    //     if (kv.second.second)
+    //         bs.write(kv.first, kv.second.first);
+    // }
 }
 
 long
@@ -57,11 +56,11 @@ PageTable::operator[](const long pnum)
             numPageFaults++;
             // read the requested page from backing store into a free frame
             fnum = getFreeFrameNum(); // somehow find a free frame
-            bs.read(pnum);            // read the page at pnum on backing store
-            copy(
-              bs.getBuff(),
-              bs.getBuff() + FRAME_SIZE,
-              Memory_tmp[fnum]);   // copy into the frame at fnum of physical memory
+            // bs.read(pnum);            // read the page at pnum on backing store
+            // copy(
+            //   bs.getBuff(),
+            //   bs.getBuff() + FRAME_SIZE,
+            //   Memory_tmp[fnum]);   // copy into the frame at fnum of physical memory
             pt[pnum].first = fnum; // point the pnum enty to fnum in page table
         }
 
@@ -103,7 +102,7 @@ PageTable::getFreeFrameNum()
 
         // if a dirty page, write its memory frame to backing store
         if (pt[pnum].second) {
-            bs.write(pnum, fnum);
+            // bs.write(pnum, fnum);
             setDirty(pnum, false); // reset dirty bit
         }
 

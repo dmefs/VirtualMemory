@@ -20,10 +20,10 @@ main(int argc, char** argv)
         return -1;
     }
 
-    if (init_memory()) {
-        cerr << "Failed to init memory\n";
-        return -1;
-    }
+    // if (init_memory()) {
+    //     cerr << "Failed to init memory\n";
+    //     return -1;
+    // }
 
     // create page table
     PageTable T(strcmp(argv[1], "-F") == 0 ? "FIFO" : "LRU");
@@ -31,7 +31,7 @@ main(int argc, char** argv)
     // open input file
     ifstream input(argv[2]);
     if (!input) {
-        exit_memory();
+        // exit_memory();
         cerr << "Unable to open input file\n";
         return -1;
     }
@@ -41,14 +41,15 @@ main(int argc, char** argv)
     // R 245
     // W 5421 132
     string line, op;
-    int addr, arg, pnum, offset, fnum, memval;
+    long addr, pnum, offset, fnum;
     vector<string> fields;
+    Memory mem;
     while (getline(input, line)) {
         istringstream iss(line);
         for (string s; iss >> s;)
             fields.push_back(s);
         op = fields[0];
-        addr = stoi(fields[1]);
+        addr = stol(fields[1]);
 
         pnum = addr >> FRAME_SIZE_BITS;    // page number
         offset = addr & FRAME_OFFSET_MASK; // page offset
@@ -59,21 +60,15 @@ main(int argc, char** argv)
         if (op == "R") {
         } else if (op == "W") {
             T.setDirty(pnum, true);
-            arg = stoi(fields[2]);
-            Memory_tmp[fnum][offset] = arg;
-        } else
-            cerr << "Bad operation: " << op << endl;
-
-        memval = Memory_tmp[fnum][offset];
+            mem.write(fnum, offset);
+        }
+        // cerr << "Bad operation: " << op << endl;
 
         // output format: page #, offset, TLB hit, page fault, physical address,
         // value (only for reads)
         cout << pnum << ' ' << offset << ' ' << (!T.tlbMiss ? 'H' : 'N') << ' '
              << (T.pageFault ? 'F' : 'N') << ' '
              << ((fnum << FRAME_SIZE_BITS) | offset);
-        // print memory content for reads
-        if (op == "R")
-            cout << ' ' << memval;
         cout << endl;
 
         fields.clear();
