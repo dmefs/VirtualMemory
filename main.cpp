@@ -1,5 +1,5 @@
+#include "Memory.h"
 #include "PageTable.h"
-#include "memory.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -8,9 +8,7 @@
 
 using namespace std;
 
-int
-main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
 
     if (!((argc == 3) &&
           (strcmp(argv[1], "-F") == 0 || strcmp(argv[1], "-L") == 0))) {
@@ -60,7 +58,7 @@ main(int argc, char** argv)
         if (op == "R") {
         } else if (op == "W") {
             T.setDirty(pnum, true);
-            mem.write(fnum, offset);
+            mem.write(addr);
         }
         // cerr << "Bad operation: " << op << endl;
 

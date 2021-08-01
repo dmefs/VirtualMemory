@@ -1,15 +1,14 @@
 #include "PageTable.h"
+#include "Memory.h"
 #include "TLB.h"
-#include "memory.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 
 using namespace std;
 
-PageTable::PageTable(const string& pageReplacementPolicy,
-                     const string& backingStorePath)
-{
+PageTable::PageTable(const string &pageReplacementPolicy,
+                     const string &backingStorePath) {
     if (!(pageReplacementPolicy == "FIFO" || pageReplacementPolicy == "LRU"))
         throw invalid_argument("Page replacement policy must be FIFO or LRU");
     else
@@ -17,16 +16,15 @@ PageTable::PageTable(const string& pageReplacementPolicy,
 
     // initialize all page entries such that they all point to frame # -1 with
     // dirty bit set to false
-    for (long i = 0; i < NUM_LOGICAL_MEM_FRAMES; i++)
+    for (size_t i = 0; i < NUM_LOGICAL_MEM_FRAMES; i++)
         pt[i] = make_pair(-1, false);
 
     // initialize free frames set; at first all frames are free
-    for (long j = 0; j < NUM_PHYSICAL_MEM_FRAMES; j++)
+    for (size_t j = 0; j < NUM_PHYSICAL_MEM_FRAMES; j++)
         fs.insert(fs.end(), j);
 }
 
-PageTable::~PageTable()
-{
+PageTable::~PageTable() {
     // commit all dirty pages to backing store
     // for (auto const& kv : pt) {
     //     if (kv.second.second)
@@ -34,9 +32,7 @@ PageTable::~PageTable()
     // }
 }
 
-long
-PageTable::operator[](const long pnum)
-{
+long PageTable::operator[](const long pnum) {
     /*
     Get the number (index) of the frame in physical memory corresponding to
     given page number (pnum) in logical memory; this is done prior to every
@@ -83,9 +79,7 @@ PageTable::operator[](const long pnum)
     return fnum;
 }
 
-long
-PageTable::getFreeFrameNum()
-{
+long PageTable::getFreeFrameNum() {
     /*
     Find a free frame and return its frame number
     */
@@ -113,10 +107,9 @@ PageTable::getFreeFrameNum()
 }
 
 // print all valid entries of page table, page # followed by frame #
-ostream&
-operator<<(ostream& strm, const PageTable& PT)
-{
-    for (auto const& kv : PT.pt) {
+ostream &
+operator<<(ostream &strm, const PageTable &PT) {
+    for (auto const &kv : PT.pt) {
         if (kv.second.first != -1)
             strm << kv.first << ' ' << kv.second.first << endl;
     }
