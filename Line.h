@@ -6,5 +6,5 @@ public:
     void write();
 
 private:
-    char count;
+    unsigned long count;
 };
