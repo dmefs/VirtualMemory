@@ -71,7 +71,6 @@ bool Memory::write(long log_addr)
     unsigned long log_lnum = ((unsigned long) log_addr >> LINE_SIZE_BITS);
     long phy_lnum = la_to_pa(log_lnum);
     array[phy_lnum].write();
-    std::cout << "Line: " << phy_lnum << std::endl;
 
     write_count++;
     if (write_count >= trigger_times) {
