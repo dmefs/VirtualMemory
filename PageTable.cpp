@@ -14,22 +14,12 @@ PageTable::PageTable(const string &pageReplacementPolicy,
     else
         this->pageReplacementPolicy = pageReplacementPolicy;
 
-    // initialize all page entries such that they all point to frame # -1 with
-    // dirty bit set to false
-    for (size_t i = 0; i < NUM_LOGICAL_MEM_FRAMES; i++)
-        pt[i] = make_pair(-1, false);
-
     // initialize free frames set; at first all frames are free
     for (size_t j = 0; j < NUM_PHYSICAL_MEM_FRAMES; j++)
         fs.insert(fs.end(), j);
 }
 
 PageTable::~PageTable() {
-    // commit all dirty pages to backing store
-    // for (auto const& kv : pt) {
-    //     if (kv.second.second)
-    //         bs.write(kv.first, kv.second.first);
-    // }
 }
 
 long PageTable::operator[](const long pnum) {
@@ -39,25 +29,24 @@ long PageTable::operator[](const long pnum) {
     access to Memory_tmp. Page faults are resolved automatically.
     */
     long fnum;
+    std::map<long, std::pair<long, bool>>::iterator itr;
+
     pageFault = tlbMiss = false;
+    fnum = -1;
+
     if (tlb.contains(pnum)) // look in TLB first
         fnum = tlb[pnum];
     else { // TLB miss; look in page table
         tlbMiss = true;
-        fnum = pt[pnum].first;
-
-        if (fnum == -1) {
+        if ((itr = pt.find(pnum)) != pt.end()) {
+            fnum = itr->second.first;
+        } else {
             // page fault!
             pageFault = true;
             numPageFaults++;
             // read the requested page from backing store into a free frame
             fnum = getFreeFrameNum(); // somehow find a free frame
-            // bs.read(pnum);            // read the page at pnum on backing store
-            // copy(
-            //   bs.getBuff(),
-            //   bs.getBuff() + FRAME_SIZE,
-            //   Memory_tmp[fnum]);   // copy into the frame at fnum of physical memory
-            pt[pnum].first = fnum; // point the pnum enty to fnum in page table
+            pt[pnum] = make_pair(fnum, false);
         }
 
         tlb[pnum] = fnum; // update TLB
@@ -92,6 +81,7 @@ long PageTable::getFreeFrameNum() {
         // by itself, fs.size() == 64 - q.size())
         // either FIFO or LRU replaces the page at the front of the queue
         long pnum = q.front(); // victim page number
+        q.pop_front();
         fnum = pt[pnum].first;
 
         // if a dirty page, write its memory frame to backing store
@@ -101,7 +91,6 @@ long PageTable::getFreeFrameNum() {
         }
 
         pt[pnum].first = -1; // reset victim page's frame number
-        q.pop_front();
     }
     return fnum;
 }
