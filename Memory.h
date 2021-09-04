@@ -3,9 +3,9 @@
 Define the page (frame) size, logical and physical memory size; declare
 the Memory_tmp array (but not define it).
 */
-const unsigned long PHY_ADDRESS_SPACE_BITS = 22;
+const unsigned long PHY_ADDRESS_SPACE_BITS = 32;
 const unsigned long PHY_ADDRESS_SPACE_SIZE = (1UL << PHY_ADDRESS_SPACE_BITS);
-const unsigned long FRAME_SIZE_BITS = 6; // lower 12 bits of logical memory address
+const unsigned long FRAME_SIZE_BITS = 12; // lower 12 bits of logical memory address
 
 const unsigned long
     NUM_LOGICAL_MEM_FRAMES =         // logical memory has 48 bits virtual address
