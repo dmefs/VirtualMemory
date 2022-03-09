@@ -1,80 +1,51 @@
-#include "Memory.h"
-#include "PageTable.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "Memory.h"
+#include "PageTable.h"
 
 using namespace std;
 
-int main(int argc, char **argv) {
-
-    if (!((argc == 3) &&
-          (strcmp(argv[1], "-F") == 0 || strcmp(argv[1], "-L") == 0))) {
-        cerr << "Usage: ./a.out [-F|-L] [INPUT FILE]" << endl
-             << "\t-F, use FIFO page replacement policy" << endl
-             << "\t-L, use LRU page replacment policy" << endl;
-        return -1;
-    }
-
-    // if (init_memory()) {
-    //     cerr << "Failed to init memory\n";
-    //     return -1;
-    // }
-
+int main(int argc, char **argv)
+{
     // create page table
     PageTable T(strcmp(argv[1], "-F") == 0 ? "FIFO" : "LRU");
 
     // open input file
     ifstream input(argv[2]);
     if (!input) {
-        // exit_memory();
         cerr << "Unable to open input file\n";
         return -1;
     }
 
-    // input line looks like
-    // R(ead) Address, or W(rite) Address Argument, separated by spaces. e.g.
-    // R 245
-    // W 5421 132
-    string line, op;
-    long addr, pnum, offset, fnum;
-    vector<string> fields;
+    unsigned long addr, pnum, offset, fnum;
     Memory mem;
-    while (getline(input, line)) {
-        istringstream iss(line);
-        for (string s; iss >> s;)
-            fields.push_back(s);
-        op = fields[0];
-        addr = stol(fields[1]);
+    for (string line; getline(input, line);) {
+        addr = stoul(line, nullptr, 0);
 
-        pnum = addr >> FRAME_SIZE_BITS;    // page number
-        offset = addr & FRAME_OFFSET_MASK; // page offset
+        pnum = addr >> FRAME_SIZE_BITS;     // page number
+        offset = addr & FRAME_OFFSET_MASK;  // page offset
 
         // access the page and get its frame number
         fnum = T[pnum];
 
-        if (op == "R") {
-        } else if (op == "W") {
-            T.setDirty(pnum, true);
-            mem.write(addr);
-        }
+        T.setDirty(pnum, true);
+        mem.write((fnum << FRAME_SIZE_BITS) | offset);
         // cerr << "Bad operation: " << op << endl;
 
         // output format: page #, offset, TLB hit, page fault, physical address,
         // value (only for reads)
-        cout << pnum << ' ' << offset << ' ' << (!T.tlbMiss ? 'H' : 'N') << ' '
-             << (T.pageFault ? 'F' : 'N') << ' '
-             << ((fnum << FRAME_SIZE_BITS) | offset);
-        cout << endl;
-
-        fields.clear();
+        //        cout << pnum << ' ' << offset << ' ' << (!T.tlbMiss ? 'H' :
+        //        'N') << ' '
+        //            << (T.pageFault ? 'F' : 'N') << ' '
+        //             << ((fnum << FRAME_SIZE_BITS) | offset);
+        //        cout << endl;
     }
-    cout << endl
-         << "Page Table:" << endl
-         << T << endl;
-    cout << endl
-         << T.numPageFaults << " Page Faults" << endl;
+    ofstream out(argv[3]);
+
+    out << mem << endl;
+    out.close();
     input.close();
 }
