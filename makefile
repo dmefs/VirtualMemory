@@ -7,10 +7,9 @@ OBJS = TLB.cpp PageTable.cpp BackingStore.cpp Memory.cpp Line.cpp main.cpp Feist
 FLAGS = -g -Wall -std=c++11
 CPP=g++
 
-dir:
-	mkdir bin
+all: orig startgap feistel
 
-orig:	dir $(OBJS) $(INCLUDES)
+orig:	$(OBJS) $(INCLUDES)
 	$(CPP) $(FLAGS) -o bin/$(EXE) $(OBJS)
 
 startgap: $(OBJS) $(INCLUDES)
@@ -24,3 +23,6 @@ test: $(EXE)
 
 clean:
 	rm -f $(EXE)
+
+dir:
+	mkdir -p bin
